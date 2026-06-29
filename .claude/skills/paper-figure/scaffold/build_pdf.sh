@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# Compile a single-tikzpicture figure into a cropped, paper-ready PDF,
+# then rasterize it to a PNG so the result can be visually inspected.
+#
+#   build_pdf.sh <figure_dir>/<figure_name>.tex
+#
+# Produces, next to the .tex:
+#   <figure_name>.pdf           the deliverable (vector, LaTeX/TikZ source)
+#   <figure_name>.pdf-preview.png   raster preview for `look at it` checks
+#
+# The <figure_name>.tex must contain ONLY a single \begin{tikzpicture}
+# ... \end{tikzpicture}. The preamble lives in scaffold/main.tex.
+set -euo pipefail
+
+if [ $# -ne 1 ]; then
+  echo "usage: build_pdf.sh <path/to/figure_name.tex>" >&2
+  exit 2
+fi
+
+TEX_PATH="$1"
+DIR="$(cd "$(dirname "$TEX_PATH")" && pwd)"
+NAME="$(basename "$TEX_PATH" .tex)"
+SCAFFOLD="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+cd "$DIR"
+# TEXINPUTS lets pdflatex find main.tex (in scaffold) and the figure (here).
+TEXINPUTS="$SCAFFOLD:$DIR:" pdflatex \
+  -interaction=nonstopmode -halt-on-error \
+  -jobname="$NAME" "\def\figfile{$NAME.tex}\input{main.tex}"
+
+# Clean up the LaTeX build litter, keep the PDF.
+rm -f "$NAME.aux" "$NAME.log"
+
+# Rasterize for visual inspection (single page -> <name>.pdf-preview.png).
+pdftoppm -png -r 200 -singlefile "$NAME.pdf" "$NAME.pdf-preview"
+
+echo "Built: $DIR/$NAME.pdf"
+echo "Preview: $DIR/$NAME.pdf-preview.png"
