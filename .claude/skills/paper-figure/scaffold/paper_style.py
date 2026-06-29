@@ -42,9 +42,17 @@ def _register_carlito() -> str:
             candidates.append(Path(out).parent)
     except Exception:
         pass
-    # Common TeX Live location as a fallback.
-    candidates += list(Path("/usr/local/texlive").glob(
-        "*/texmf-dist/fonts/truetype/google/carlito"))
+    # Common TeX tree locations as a fallback if kpsewhich is unavailable:
+    # macOS / manual TeX Live, Linux distro system trees, and the per-user
+    # texmf tree (TEXMFHOME) where a no-root cluster install lands.
+    carlito_rel = "fonts/truetype/google/carlito"
+    candidates += list(Path("/usr/local/texlive").glob(f"*/texmf-dist/{carlito_rel}"))
+    candidates += [
+        Path("/usr/share/texlive/texmf-dist") / carlito_rel,
+        Path("/usr/share/texmf-dist") / carlito_rel,
+        Path("/usr/share/texmf") / carlito_rel,
+        Path.home() / "texmf" / carlito_rel,
+    ]
     for d in candidates:
         ttfs = list(d.glob("Carlito-*.ttf"))
         if ttfs:

@@ -32,7 +32,22 @@ TEXINPUTS="$SCAFFOLD:$DIR:" pdflatex \
 rm -f "$NAME.aux" "$NAME.log"
 
 # Rasterize for visual inspection (single page -> <name>.pdf-preview.png).
-pdftoppm -png -r 200 -singlefile "$NAME.pdf" "$NAME.pdf-preview"
+# pdftoppm/pdftocairo (poppler) give the cleanest output but are often
+# absent on clusters; fall back to Ghostscript, which is near-universal.
+PREVIEW="$NAME.pdf-preview.png"
+if command -v pdftoppm >/dev/null 2>&1; then
+  pdftoppm -png -r 200 -singlefile "$NAME.pdf" "$NAME.pdf-preview"
+elif command -v pdftocairo >/dev/null 2>&1; then
+  pdftocairo -png -r 200 -singlefile "$NAME.pdf" "$NAME.pdf-preview"
+elif command -v gs >/dev/null 2>&1; then
+  gs -q -dSAFER -dBATCH -dNOPAUSE -dUseCropBox -r200 \
+     -sDEVICE=pngalpha -sOutputFile="$PREVIEW" "$NAME.pdf"
+else
+  echo "build_pdf.sh: need one of pdftoppm, pdftocairo, or gs to rasterize the PDF." >&2
+  echo "  Linux (no root): 'conda install -c conda-forge poppler', or load a ghostscript/poppler module." >&2
+  echo "  macOS: 'brew install poppler'." >&2
+  exit 3
+fi
 
 echo "Built: $DIR/$NAME.pdf"
 echo "Preview: $DIR/$NAME.pdf-preview.png"

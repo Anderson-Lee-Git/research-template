@@ -24,15 +24,20 @@ Paths below are relative to the repo root.
 - **Python + matplotlib.** No project install needed — run scripts with
   the repo's `uv`: `uv run --with matplotlib python <script>`. (matplotlib
   ≥ 3.8; verified on 3.11.)
-- **LaTeX** with `pdflatex`, the `carlito`, `pgfplots`, `standalone`, and
-  `sansmath` packages (all in a full TeX Live, e.g. TeX Live 2025).
-  Verify: `kpsewhich carlito.sty standalone.cls`.
-- **`pdftoppm`** (from poppler) to rasterize the PDF for inspection.
-  Verify: `which pdftoppm`. macOS: `brew install poppler`.
+- **LaTeX** with `pdflatex`, the `carlito` (needs `fontaxes`), `pgfplots`,
+  `standalone`, and `sansmath` packages (all in a full TeX Live; verified
+  on TeX Live 2020 and 2025). Verify: `kpsewhich carlito.sty standalone.cls`.
+- **A PDF rasterizer** to render the PDF for inspection. `build_pdf.sh`
+  tries `pdftoppm` → `pdftocairo` (both poppler) → `gs` (Ghostscript), in
+  that order. Verify at least one: `which pdftoppm pdftocairo gs`. macOS:
+  `brew install poppler`. Linux clusters usually have `gs` already.
 - **Carlito font** is pulled automatically from the TeX Live tree, so no
   system font install is needed for either source. `paper_style.py`
-  locates the Carlito TTFs via `kpsewhich`; `main.tex` uses the `carlito`
-  LaTeX package.
+  locates the Carlito TTFs via `kpsewhich` (with `/usr/share/texlive` and
+  `~/texmf` as fallbacks); `main.tex` uses the `carlito` LaTeX package.
+- **Linux cluster (no root, no internet on compute nodes):** see
+  *Cluster setup* under Troubleshooting — install the missing TeX packages
+  into your user `~/texmf` tree from a login node before submitting jobs.
 
 ## Directory layout — one task, one subdirectory
 
@@ -190,7 +195,36 @@ grouped bar chart). Copy its `.py` and `.tex` as starting points.
   `carlito` TeX package if missing.
 - `pdflatex: ... carlito.sty not found` → install the `carlito` package
   (`tlmgr install carlito` on TeX Live).
-- `build_pdf.sh: pdftoppm: command not found` → `brew install poppler`
-  (macOS) / `apt-get install poppler-utils` (Linux).
+- `build_pdf.sh: need one of pdftoppm, pdftocairo, or gs` → install a
+  rasterizer: `brew install poppler` (macOS) / `apt-get install
+  poppler-utils` (Linux with root). No root? `gs` is usually already
+  present; otherwise `conda install -c conda-forge poppler`.
 - LaTeX `! Package pgfplots Error: ... compat` → bump `compat=` in
   `main.tex` to your pgfplots version (or lower it).
+- `pdfTeX error: ... Font Crlt-... not found` (tries `mktexpk`/`gsftopk`) →
+  the active `pdftex.map` doesn't know your Carlito. Register it:
+  `updmap-user --enable Map=carlito.map` (user) or `--sys` (root). If
+  `updmap` aborts on an unrelated missing map (e.g. a stale `morisawa5.map`
+  in a system config you can't edit), clear it from your user view first:
+  `updmap-user --disable <that>.map`, then re-run.
+
+### Cluster setup (no root, no internet on compute nodes)
+
+On a shared cluster you typically can't `tlmgr install` (it's often
+distro-patched to refuse, and the system tree is read-only) and compute
+nodes have no internet. Install the missing TeX packages into your **user
+tree** (`TEXMFHOME`, usually `~/texmf`) from a **login node**, once:
+
+1. Grab the runtime files. CTAN serves TDS-ready zips for some packages
+   (`https://mirrors.ctan.org/install/<path>.tds.zip`); for the rest pull
+   the per-package tarball from the matching TeX Live historic tlnet
+   archive (`.../historic/systems/texlive/<year>/tlnet-final/archive/<pkg>.tar.xz`).
+   `paper-figure` needs `standalone`, `carlito`, and `fontaxes`.
+2. Extract the TDS dirs (`tex/`, `fonts/`, `doc/`) into `~/texmf`, then
+   refresh the filename DB: `mktexlsr ~/texmf`.
+3. Carlito embeds Type1 fonts via a map — register it once:
+   `updmap-user --enable Map=carlito.map` (see the `Crlt-... not found`
+   note above if `updmap` balks).
+4. Verify: `kpsewhich carlito.sty standalone.cls fontaxes.sty
+   Carlito-Regular.ttf`. Match the package versions to your TeX Live year
+   so font/`.tfm`/map names line up.
