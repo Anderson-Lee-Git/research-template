@@ -6,14 +6,27 @@ Best practices for ML research experimentation: intent, logging, observability, 
 
 ## 1. Every Experiment Starts With Intent
 
-**Write down what you're testing and why — before you run it.**
+**Write down the goal and what you're testing — before you run it.**
 
-- State the question or hypothesis in one sentence. ("Does X improve Y over baseline Z?" not "try X")
-- Record what outcome would confirm it and what would refute it.
-- Name the baseline you're comparing against.
-- If you can't articulate the intent, you're not ready to run.
+Start with the **Goal**: what this run is meant to *produce or accomplish*, stated as concrete
+**deliverables**, not just an activity. Many runs are not hypothesis tests — a data-generation,
+recollection, or migration run's whole point is the artifact it yields; forcing a confirm/refute
+frame onto it obscures why it exists.
 
-The test: Someone reading the experiment cold should know why it exists without asking you.
+- **Goal & deliverables**: the concrete output(s) the run must produce and where they land.
+  ("Recollect clean seeds for the 93 contaminated tasks and overlay them into the canonical
+  set" → deliverable: the corrected canonical seed set + the recollected trials. Not "rerun the
+  job.") Success = the deliverables exist and are valid.
+- **Question / hypothesis** (when there is one): state it in one sentence ("Does X improve Y over
+  baseline Z?"), and record what outcome would **confirm** vs **refute** it. For a pure
+  data-generation run there may be no hypothesis — say so; the goal/deliverable is the point.
+  Constraints you must satisfy along the way (e.g. "without crashing the serving engine") are
+  *guardrails on the goal*, not the goal itself — don't headline them as the question.
+- **Baseline**: name what you're comparing against (when comparative).
+- If you can't articulate the goal, you're not ready to run.
+
+The test: Someone reading the experiment cold should know what it was supposed to deliver and
+why it exists — without asking you.
 
 ## 2. Capture Enough to Reproduce
 
@@ -49,7 +62,7 @@ experiments/
     metrics/         # metrics over time (jsonl/csv)
     checkpoints/     # model artifacts
     figures/         # plots generated from this run's metrics
-    NOTES.md         # intent, observations, conclusion
+    NOTES.md         # goal & deliverables, intent, observations, conclusion
 ```
 
 ## 4. Log for Observability, Not Just the Final Number
@@ -89,11 +102,13 @@ The test: You can regenerate every figure in a report by running a script, not b
 
 **An experiment isn't done when it finishes running — it's done when you've written what it told you.**
 
-- Write the outcome into the run's `NOTES.md` and the top-level index: confirmed / refuted / inconclusive, with the number.
+- Write the outcome into the run's `NOTES.md` and the top-level index, against the **goal**:
+  did it produce the deliverables? (and, if there was a hypothesis, confirmed / refuted /
+  inconclusive) — always with the number.
 - Note surprises and the next question they raise.
 - Negative and failed results are still results — record them so you don't repeat them.
 
-The test: Months later you can answer "what did we learn from X?" from the notes, not from memory.
+The test: Months later you can answer "what did X deliver / what did we learn from it?" from the notes, not from memory.
 
 ---
 
