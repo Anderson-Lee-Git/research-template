@@ -28,6 +28,7 @@ The deciding question: *are these jobs hitting the same model or different ones?
   - **`./models`** for HF models.
   - **`./datasets`** for HF datasets.
 - Point code at these local paths on the cluster rather than relying on on-the-fly downloads.
+- Allocation, queue buckets, and partition choice: see `cluster_guideline.md`.
 
 ---
 
