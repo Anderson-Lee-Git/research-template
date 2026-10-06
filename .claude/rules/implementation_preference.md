@@ -23,7 +23,7 @@ The deciding question: *are these jobs hitting the same model or different ones?
 
 ## Slurm / Cluster
 
-- Compute nodes have **no internet access**. Pre-download anything from Hugging Face onto the shared filesystem before submitting jobs.
+- Pre-download anything from Hugging Face onto the shared filesystem before submitting jobs.
 - Local download locations:
   - **`./models`** for HF models.
   - **`./datasets`** for HF datasets.
