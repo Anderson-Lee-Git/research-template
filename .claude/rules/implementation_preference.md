@@ -21,15 +21,6 @@ Choice of inference path depends on the model-loading pattern of the job:
 
 The deciding question: *are these jobs hitting the same model or different ones?*
 
-## Slurm / Cluster
-
-- Pre-download anything from Hugging Face onto the shared filesystem before submitting jobs.
-- Local download locations:
-  - **`./models`** for HF models.
-  - **`./datasets`** for HF datasets.
-- Point code at these local paths on the cluster rather than relying on on-the-fly downloads.
-- Allocation, queue buckets, and partition choice: see `cluster_guideline.md`.
-
 ---
 
 *Add new preferences below as they come up. Keep them short and revisable.*

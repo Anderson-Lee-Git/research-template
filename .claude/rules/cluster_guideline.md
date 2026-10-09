@@ -9,7 +9,12 @@ How to work on the Slurm compute cluster: network access, GPU allocation, and pa
 **Anything that needs the network happens on the login node, not the compute node.**
 
 - Compute nodes cannot reach the internet. `pip install`, `huggingface-cli download`, `git fetch`, `wandb` syncs, API calls, etc. will hang or fail if run from a job.
-- Do network-dependent work on the login node **before** submitting, and point jobs at the results on the shared filesystem (see `./models` and `./datasets` in `implementation_preference.md`).
+    - Pre-download anything from Hugging Face onto the shared filesystem before submitting jobs.
+    - Local download locations:
+    - **`<repo-root>/models`** for HF models.
+    - **`<repo-root>/datasets`** for HF datasets.
+    - Point code at these local paths on the cluster rather than relying on on-the-fly downloads.
+- Do network-dependent work on the login node **before** submitting, and point jobs at the results on the shared filesystem
 - If a job genuinely must reach the internet at runtime, route the traffic back through the login node over SSH (e.g. an SSH tunnel / reverse proxy from the compute node to the login node). Treat this as the exception, not the default — prefer pre-staging.
 
 The test: A job should run to completion with the network cable unplugged.
