@@ -2,7 +2,9 @@
 
 Applies to every app in `apps/` (the review tool, the related-work gallery). Each app's own spec lives in
 `docs/<app>/SPEC.md`; where this document says "the spec", read that app's spec. Guidance about controls an
-app does not have (for example verdicts, tags or edits in a read-only app) does not apply to it.
+app does not have (for example verdicts, tags or edits in a read-only app) does not apply to it. If an app's
+spec does not exist yet, write it (at least its §3 glossary) before building UI text; until then, rules that
+depend on the spec cannot be checked.
 
 Source: Apple Human Interface Guidelines, retrieved 2026-10-07, paraphrased. HIG points (pt) are read as CSS px; both are abstract units ([images](https://developer.apple.com/design/human-interface-guidelines/images)). Tags: **HIG** = Apple's rule. **Web** = our browser translation. **Team default** = a value the HIG doesn't set; the closest HIG page is cited.
 
@@ -126,7 +128,7 @@ Source: Apple Human Interface Guidelines, retrieved 2026-10-07, paraphrased. HIG
 
 ### 3.7 Writing — [writing](https://developer.apple.com/design/human-interface-guidelines/writing)
 
-- **HIG:** keep a glossary and use one term per concept. **Team default:** use the glossary in the app's spec exactly (§3 of [review_app/SPEC.md](../review_app/SPEC.md#3-glossary), [gallery_app/SPEC.md](../gallery_app/SPEC.md#3-glossary)). No synonyms.
+- **HIG:** keep a glossary and use one term per concept. **Team default:** use the glossary in the app's spec exactly (§3 of [docs/review_app/SPEC.md](../../docs/review_app/SPEC.md#3-glossary), [docs/gallery_app/SPEC.md](../../docs/gallery_app/SPEC.md#3-glossary)). No synonyms.
 - **HIG:** label buttons with verbs ("Keep Group"). Avoid "Click here" and cute labels.
 - **HIG:** use few possessives and no "we". Write "Unable to load item".
 - **HIG:** show errors next to the problem, never blame, and say how to fix it. No "Oops".

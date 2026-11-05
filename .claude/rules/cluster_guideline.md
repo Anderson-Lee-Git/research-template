@@ -1,6 +1,6 @@
 # Cluster Guidelines
 
-How to work on the Slurm compute cluster: network access, GPU allocation, and partition choice. Merge with `implementation_preference.md` (which covers local model/dataset paths) as needed.
+How to work on the Slurm compute cluster: network access, GPU allocation, and partition choice. Merge with `implementation_preference.md` (which covers tooling and inference defaults) as needed.
 
 **Tradeoff:** Queue time is the scarce resource here, not GPU time. Spend a minute estimating before allocating rather than sitting in a queue you didn't need to join.
 
